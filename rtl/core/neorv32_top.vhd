@@ -36,36 +36,37 @@ entity neorv32_top is
     OCD_JEDEC_ID          : std_ulogic_vector(10 downto 0) := "00000000000"; -- JEDEC ID: continuation codes + vendor ID
 
     -- RISC-V CPU Extensions --
-    RISCV_ISA_C           : boolean                        := false;       -- implement compressed extension
-    RISCV_ISA_E           : boolean                        := false;       -- implement embedded RF extension
-    RISCV_ISA_M           : boolean                        := false;       -- implement mul/div extension
-    RISCV_ISA_U           : boolean                        := false;       -- implement user mode extension
-    RISCV_ISA_Zaamo       : boolean                        := false;       -- implement atomic read-modify-write operations extension
-    RISCV_ISA_Zalrsc      : boolean                        := false;       -- implement atomic reservation-set operations extension
-    RISCV_ISA_Zcb         : boolean                        := false;       -- implement additional code size reduction instructions
-    RISCV_ISA_Zba         : boolean                        := false;       -- implement shifted-add bit-manipulation extension
-    RISCV_ISA_Zbb         : boolean                        := false;       -- implement basic bit-manipulation extension
-    RISCV_ISA_Zbkb        : boolean                        := false;       -- implement bit-manipulation instructions for cryptography
-    RISCV_ISA_Zbkc        : boolean                        := false;       -- implement carry-less multiplication instructions
-    RISCV_ISA_Zbkx        : boolean                        := false;       -- implement cryptography crossbar permutation extension
-    RISCV_ISA_Zbs         : boolean                        := false;       -- implement single-bit bit-manipulation extension
-    RISCV_ISA_Zfinx       : boolean                        := false;       -- implement 32-bit floating-point extension
-    RISCV_ISA_Zicntr      : boolean                        := false;       -- implement base counters
-    RISCV_ISA_Zicond      : boolean                        := false;       -- implement integer conditional operations
-    RISCV_ISA_Zihpm       : boolean                        := false;       -- implement hardware performance monitors
-    RISCV_ISA_Zknd        : boolean                        := false;       -- implement cryptography NIST AES decryption extension
-    RISCV_ISA_Zkne        : boolean                        := false;       -- implement cryptography NIST AES encryption extension
-    RISCV_ISA_Zknh        : boolean                        := false;       -- implement cryptography NIST hash extension
-    RISCV_ISA_Zksed       : boolean                        := false;       -- implement ShangMi block cipher extension
-    RISCV_ISA_Zksh        : boolean                        := false;       -- implement ShangMi hash extension
-    RISCV_ISA_Zmmul       : boolean                        := false;       -- implement multiply-only M sub-extension
-    RISCV_ISA_Zxcfu       : boolean                        := false;       -- implement custom (instr.) functions unit
+    RISCV_ISA_C           : boolean                        := false;       -- compressed extension
+    RISCV_ISA_E           : boolean                        := false;       -- embedded RF extension
+    RISCV_ISA_M           : boolean                        := false;       -- mul/div extension
+    RISCV_ISA_U           : boolean                        := false;       -- user mode extension
+    RISCV_ISA_Zaamo       : boolean                        := false;       -- atomic read-modify-write operations extension
+    RISCV_ISA_Zalrsc      : boolean                        := false;       -- atomic reservation-set operations extension
+    RISCV_ISA_Zcb         : boolean                        := false;       -- additional code size reduction instructions
+    RISCV_ISA_Zba         : boolean                        := false;       -- shifted-add bit-manipulation extension
+    RISCV_ISA_Zbb         : boolean                        := false;       -- basic bit-manipulation extension
+    RISCV_ISA_Zbkb        : boolean                        := false;       -- bit-manipulation instructions for cryptography
+    RISCV_ISA_Zbkc        : boolean                        := false;       -- carry-less multiplication instructions
+    RISCV_ISA_Zbkx        : boolean                        := false;       -- cryptography crossbar permutation extension
+    RISCV_ISA_Zbs         : boolean                        := false;       -- single-bit bit-manipulation extension
+    RISCV_ISA_Zfinx       : boolean                        := false;       -- 32-bit floating-point extension
+    RISCV_ISA_Zibi        : boolean                        := false;       -- branch with immediate
+    RISCV_ISA_Zicntr      : boolean                        := false;       -- base counters
+    RISCV_ISA_Zicond      : boolean                        := false;       -- integer conditional operations
+    RISCV_ISA_Zihpm       : boolean                        := false;       -- hardware performance monitors
+    RISCV_ISA_Zknd        : boolean                        := false;       -- cryptography NIST AES decryption extension
+    RISCV_ISA_Zkne        : boolean                        := false;       -- cryptography NIST AES encryption extension
+    RISCV_ISA_Zknh        : boolean                        := false;       -- cryptography NIST hash extension
+    RISCV_ISA_Zksed       : boolean                        := false;       -- ShangMi block cipher extension
+    RISCV_ISA_Zksh        : boolean                        := false;       -- ShangMi hash extension
+    RISCV_ISA_Zmmul       : boolean                        := false;       -- multiply-only M sub-extension
+    RISCV_ISA_Zxcfu       : boolean                        := false;       -- custom (instr.) functions unit
 
     -- Tuning Options --
-    CPU_CONSTT_BR_EN      : boolean                        := false;       -- implement constant-time branches
+    CPU_CONSTT_BR_EN      : boolean                        := false;       -- enable constant-time branches
     CPU_FAST_MUL_EN       : boolean                        := false;       -- use DSPs for M extension's multiplier
     CPU_FAST_SHIFT_EN     : boolean                        := false;       -- use barrel shifter for shift operations
-    CPU_RF_HW_RST_EN      : boolean                        := false;       -- implement full hardware reset for register file
+    CPU_RF_HW_RST_EN      : boolean                        := false;       -- enable full hardware reset for register file
 
     -- Physical Memory Protection (PMP) --
     PMP_NUM_REGIONS       : natural range 0 to 16          := 0;           -- number of regions (0..16)
@@ -119,14 +120,14 @@ entity neorv32_top is
     IO_TWD_EN             : boolean                        := false;       -- implement two-wire device (TWD)
     IO_TWD_RX_FIFO        : natural range 1 to 2**15       := 1;           -- TX FIFO depth, has to be zero or a power of two, min 1
     IO_TWD_TX_FIFO        : natural range 1 to 2**15       := 1;           -- RX FIFO depth, has to be zero or a power of two, min 1
-    IO_PWM_NUM_CH         : natural range 0 to 16          := 0;           -- number of PWM channels to implement (0..16)
+    IO_PWM_NUM            : natural range 0 to 32          := 0;           -- number of PWM channels to implement (0..32)
     IO_WDT_EN             : boolean                        := false;       -- implement watch dog timer (WDT)
     IO_TRNG_EN            : boolean                        := false;       -- implement true random number generator (TRNG)
     IO_TRNG_FIFO          : natural range 1 to 2**15       := 1;           -- data FIFO depth, has to be a power of two, min 1
     IO_CFS_EN             : boolean                        := false;       -- implement custom functions subsystem (CFS)
     IO_NEOLED_EN          : boolean                        := false;       -- implement NeoPixel-compatible smart LED interface (NEOLED)
     IO_NEOLED_TX_FIFO     : natural range 1 to 2**15       := 1;           -- NEOLED FIFO depth, has to be a power of two, min 1
-    IO_GPTMR_EN           : boolean                        := false;       -- implement general purpose timer (GPTMR)
+    IO_GPTMR_NUM          : natural range 0 to 16          := 0;           -- number of GPTMR timer slices to implement (0..16)
     IO_ONEWIRE_EN         : boolean                        := false;       -- implement 1-wire interface (ONEWIRE)
     IO_ONEWIRE_FIFO       : natural range 1 to 2**15       := 1;           -- RTX FIFO depth, has to be zero or a power of two, min 1
     IO_DMA_EN             : boolean                        := false;       -- implement direct memory access controller (DMA)
@@ -224,8 +225,8 @@ entity neorv32_top is
     onewire_i      : in  std_ulogic := 'H';                                 -- 1-wire bus sense input
     onewire_o      : out std_ulogic;                                        -- 1-wire bus output (pull low only)
 
-    -- PWM (available if IO_PWM_NUM_CH > 0) --
-    pwm_o          : out std_ulogic_vector(15 downto 0);                    -- pwm channels
+    -- PWM (available if IO_PWM_NUM > 0) --
+    pwm_o          : out std_ulogic_vector(31 downto 0);                    -- pwm channels
 
     -- Custom Functions Subsystem IO (available if IO_CFS_EN = true) --
     cfs_in_i       : in  std_ulogic_vector(255 downto 0) := (others => 'L'); -- custom CFS inputs conduit
@@ -263,7 +264,8 @@ architecture neorv32_top_rtl of neorv32_top is
   -- auto-configuration --
   constant num_cores_c     : natural := cond_sel_natural_f(DUAL_CORE_EN, 2, 1);
   constant io_gpio_en_c    : boolean := boolean(IO_GPIO_NUM > 0);
-  constant io_pwm_en_c     : boolean := boolean(IO_PWM_NUM_CH > 0);
+  constant io_pwm_en_c     : boolean := boolean(IO_PWM_NUM > 0);
+  constant io_gptmr_en_c   : boolean := boolean(IO_GPTMR_NUM > 0);
   constant cpu_smpmp_en_c  : boolean := boolean(PMP_NUM_REGIONS > 0);
   constant io_sysinfo_en_c : boolean := not IO_DISABLE_SYSINFO;
   constant ocd_auth_en_c   : boolean := OCD_EN and OCD_AUTHENTICATION;
@@ -368,7 +370,7 @@ begin
       cond_sel_string_f(IO_TRNG_EN,      "TRNG ",     "") &
       cond_sel_string_f(IO_CFS_EN,       "CFS ",      "") &
       cond_sel_string_f(IO_NEOLED_EN,    "NEOLED ",   "") &
-      cond_sel_string_f(IO_GPTMR_EN,     "GPTMR ",    "") &
+      cond_sel_string_f(io_gptmr_en_c,   "GPTMR ",    "") &
       cond_sel_string_f(IO_ONEWIRE_EN,   "ONEWIRE ",  "") &
       cond_sel_string_f(IO_DMA_EN,       "DMA ",      "") &
       cond_sel_string_f(IO_SLINK_EN,     "SLINK ",    "") &
@@ -501,6 +503,7 @@ begin
       RISCV_ISA_Zbkx      => RISCV_ISA_Zbkx,
       RISCV_ISA_Zbs       => RISCV_ISA_Zbs,
       RISCV_ISA_Zfinx     => RISCV_ISA_Zfinx,
+      RISCV_ISA_Zibi      => RISCV_ISA_Zibi,
       RISCV_ISA_Zicntr    => RISCV_ISA_Zicntr,
       RISCV_ISA_Zicond    => RISCV_ISA_Zicond,
       RISCV_ISA_Zihpm     => RISCV_ISA_Zihpm,
@@ -927,8 +930,6 @@ begin
     -- -------------------------------------------------------------------------------------------
     neorv32_bus_io_switch_inst: entity neorv32.neorv32_bus_io_switch
     generic map (
-      INREG_EN  => true,
-      OUTREG_EN => true,
       DEV_SIZE  => iodev_size_c,
       DEV_00_EN => bootrom_en_c,    DEV_00_BASE => base_io_bootrom_c,
       DEV_01_EN => false,           DEV_01_BASE => (others => '0'), -- reserved
@@ -947,7 +948,7 @@ begin
       DEV_14_EN => false,           DEV_14_BASE => (others => '0'), -- reserved
       DEV_15_EN => false,           DEV_15_BASE => (others => '0'), -- reserved
       DEV_16_EN => io_pwm_en_c,     DEV_16_BASE => base_io_pwm_c,
-      DEV_17_EN => IO_GPTMR_EN,     DEV_17_BASE => base_io_gptmr_c,
+      DEV_17_EN => io_gptmr_en_c,   DEV_17_BASE => base_io_gptmr_c,
       DEV_18_EN => IO_ONEWIRE_EN,   DEV_18_BASE => base_io_onewire_c,
       DEV_19_EN => IO_TRACER_EN,    DEV_19_BASE => base_io_tracer_c,
       DEV_20_EN => IO_CLINT_EN,     DEV_20_BASE => base_io_clint_c,
@@ -1323,7 +1324,7 @@ begin
     if io_pwm_en_c generate
       neorv32_pwm_inst: entity neorv32.neorv32_pwm
       generic map (
-        NUM_CHANNELS => IO_PWM_NUM_CH
+        NUM_CHANNELS => IO_PWM_NUM
       )
       port map (
         clk_i     => clk_i,
@@ -1396,8 +1397,11 @@ begin
     -- General Purpose Timer (GPTMR) ----------------------------------------------------------
     -- -------------------------------------------------------------------------------------------
     neorv32_gptmr_enabled:
-    if IO_GPTMR_EN generate
+    if io_gptmr_en_c generate
       neorv32_gptmr_inst: entity neorv32.neorv32_gptmr
+      generic map (
+        NUM_SLICES => IO_GPTMR_NUM
+      )
       port map (
         clk_i     => clk_i,
         rstn_i    => rstn_sys,
@@ -1409,7 +1413,7 @@ begin
     end generate;
 
     neorv32_gptmr_disabled:
-    if not IO_GPTMR_EN generate
+    if not io_gptmr_en_c generate
       iodev_rsp(IODEV_GPTMR) <= rsp_terminate_c;
       firq(FIRQ_GPTMR)       <= '0';
     end generate;
@@ -1552,7 +1556,7 @@ begin
         IO_TRNG_EN        => IO_TRNG_EN,
         IO_CFS_EN         => IO_CFS_EN,
         IO_NEOLED_EN      => IO_NEOLED_EN,
-        IO_GPTMR_EN       => IO_GPTMR_EN,
+        IO_GPTMR_EN       => io_gptmr_en_c,
         IO_ONEWIRE_EN     => IO_ONEWIRE_EN,
         IO_DMA_EN         => IO_DMA_EN,
         IO_SLINK_EN       => IO_SLINK_EN,

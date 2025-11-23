@@ -18,10 +18,10 @@ use neorv32.neorv32_package.all;
 entity neorv32_tracer is
   generic (
     TRACE_DEPTH   : natural range 1 to 2**15; -- trace buffer depth (has to be a power of two)
-    DUAL_CORE_EN  : boolean; -- trace the dual-core configuration
-    SIM_LOG_EN    : boolean; -- enable simulation trace logging
-    SIM_LOG_FILE0 : string := "";  -- trace log file CPU 0
-    SIM_LOG_FILE1 : string := ""   -- trace log file CPU 1
+    DUAL_CORE_EN  : boolean;                  -- trace the dual-core configuration
+    SIM_LOG_EN    : boolean;                  -- enable simulation trace logging
+    SIM_LOG_FILE0 : string := "";             -- trace log file CPU 0
+    SIM_LOG_FILE1 : string := ""              -- trace log file CPU 1
   );
   port (
     clk_i     : in  std_ulogic;   -- global clock line
@@ -372,7 +372,7 @@ architecture neorv32_tracer_simlog_rtl of neorv32_tracer_simlog is
     machine  : std_ulogic_vector(31 downto 0); -- instruction word
     mnemonic : string(1 to 11); -- according assembly mnemonic
   end record;
-  type inst_t is array (0 to 149) of inst_touple_c;
+  type inst_t is array (0 to 151) of inst_touple_c;
   constant inst_c : inst_t := (
     ("-------------------------0110111", "lui        "), -- base ISA
     ("-------------------------0010111", "auipc      "),
@@ -417,6 +417,8 @@ architecture neorv32_tracer_simlog_rtl of neorv32_tracer_simlog is
     ("00010000010100000000000001110011", "wfi        "),
     ("00110000001000000000000001110011", "mret       "),
     ("01111011001000000000000001110011", "dret       "),
+    ("-----------------010-----1100011", "beqi       "), -- Zibi
+    ("-----------------011-----1100011", "bnei       "),
     ("-------------------------0001011", "custom0    "), -- custom instructions
     ("-------------------------0101011", "custom1    "),
     ("-------------------------1011011", "custom2    "),
@@ -711,18 +713,20 @@ architecture neorv32_tracer_simlog_rtl of neorv32_tracer_simlog is
     ii_iv := to_integer(signed(ii_v));
     -- instruction types --
     case inst(instr_opcode_msb_c downto instr_opcode_lsb_c) is
-      when opcode_alui_c   => return "x" & integer'image(rd_iv)  & ", x"  & integer'image(rs2_iv) & ", "  & integer'image(ii_iv);
-      when opcode_alu_c    => return "x" & integer'image(rd_iv)  & ", x"  & integer'image(rs2_iv) & ", x" & integer'image(rs1_iv);
+      when opcode_alui_c   => return "x" & integer'image(rd_iv)  & ", x"  & integer'image(rs1_iv) & ", "  & integer'image(ii_iv);
+      when opcode_alu_c    => return "x" & integer'image(rd_iv)  & ", x"  & integer'image(rs1_iv) & ", x" & integer'image(rs2_iv);
       when opcode_lui_c    => return "x" & integer'image(rd_iv)  & ", 0x" & print_hex_f(iu_v);
       when opcode_auipc_c  => return "x" & integer'image(rd_iv)  & ", 0x" & print_hex_f(iu_v);
       when opcode_jal_c    => return "x" & integer'image(rd_iv)  & ", "   & integer'image(ij_iv);
-      when opcode_jalr_c   => return "x" & integer'image(rd_iv)  & ", x"  & integer'image(rs2_iv) & ", "  & integer'image(ii_iv);
-      when opcode_branch_c => return "x" & integer'image(rs2_iv) & ", x"  & integer'image(rs1_iv) & ", "  & integer'image(is_iv);
+      when opcode_jalr_c   => return "x" & integer'image(rd_iv)  & ", "   & integer'image(ii_iv)  & "(x"  & integer'image(rs1_iv) & ")";
+      when opcode_branch_c => return "x" & integer'image(rs1_iv) & ", x"  & integer'image(rs2_iv) & ", "  & integer'image(is_iv);
       when opcode_load_c   => return "x" & integer'image(rd_iv)  & ", "   & integer'image(is_iv)  & "(x"  & integer'image(rs1_iv) & ")";
-      when opcode_store_c  => return "x" & integer'image(rs1_iv) & ", "   & integer'image(is_iv)  & "(x"  & integer'image(rs2_iv) & ")";
+      when opcode_store_c  => return "x" & integer'image(rs2_iv) & ", "   & integer'image(is_iv)  & "(x"  & integer'image(rs1_iv) & ")";
       when opcode_amo_c    =>
-        if (inst(28) = '1') then -- zalrsc
+        if (inst(28 downto 27) = "10") then -- zalrsc LR
           return "x" & integer'image(rd_iv) & ", (x" & integer'image(rs1_iv) & ")";
+        elsif (inst(28 downto 27) = "11") then -- zalrsc SC
+          return "x" & integer'image(rd_iv) & ", x" & integer'image(rs2_iv) & ", (x" & integer'image(rs1_iv) & ")";
         else -- zaamo
           return "x" & integer'image(rd_iv) & ", x" & integer'image(rs2_iv) & ", (x" & integer'image(rs1_iv) & ")";
         end if;

@@ -29,44 +29,45 @@ entity neorv32_cpu_control is
     DEBUG_PARK_ADDR   : std_ulogic_vector(31 downto 0); -- cpu debug-mode parking loop entry address, 4-byte aligned
     DEBUG_EXC_ADDR    : std_ulogic_vector(31 downto 0); -- cpu debug-mode exception entry address, 4-byte aligned
     -- RISC-V ISA Extensions --
-    RISCV_ISA_A       : boolean; -- implement atomic memory operations extension
-    RISCV_ISA_B       : boolean; -- implement bit-manipulation extension
-    RISCV_ISA_C       : boolean; -- implement compressed extension
-    RISCV_ISA_E       : boolean; -- implement embedded-class register file extension
-    RISCV_ISA_M       : boolean; -- implement mul/div extension
-    RISCV_ISA_U       : boolean; -- implement user mode extension
-    RISCV_ISA_Zaamo   : boolean; -- implement atomic read-modify-write extension
-    RISCV_ISA_Zalrsc  : boolean; -- implement atomic reservation-set operations extension
-    RISCV_ISA_Zcb     : boolean; -- implement additional code size reduction instructions
-    RISCV_ISA_Zba     : boolean; -- implement shifted-add bit-manipulation extension
-    RISCV_ISA_Zbb     : boolean; -- implement basic bit-manipulation extension
-    RISCV_ISA_Zbkb    : boolean; -- implement bit-manipulation instructions for cryptography
-    RISCV_ISA_Zbkc    : boolean; -- implement carry-less multiplication instructions
-    RISCV_ISA_Zbkx    : boolean; -- implement cryptography crossbar permutation extension
-    RISCV_ISA_Zbs     : boolean; -- implement single-bit bit-manipulation extension
-    RISCV_ISA_Zfinx   : boolean; -- implement 32-bit floating-point extension
-    RISCV_ISA_Zicntr  : boolean; -- implement base counters
-    RISCV_ISA_Zicond  : boolean; -- implement integer conditional operations
-    RISCV_ISA_Zihpm   : boolean; -- implement hardware performance monitors
-    RISCV_ISA_Zkn     : boolean; -- NIST algorithm suite available
-    RISCV_ISA_Zknd    : boolean; -- implement cryptography NIST AES decryption extension
-    RISCV_ISA_Zkne    : boolean; -- implement cryptography NIST AES encryption extension
-    RISCV_ISA_Zknh    : boolean; -- implement cryptography NIST hash extension
-    RISCV_ISA_Zks     : boolean; -- ShangMi algorithm suite available
-    RISCV_ISA_Zksed   : boolean; -- implement ShangMi block cipher extension
-    RISCV_ISA_Zksh    : boolean; -- implement ShangMi hash extension
-    RISCV_ISA_Zkt     : boolean; -- data-independent execution time available (for cryptography operations)
-    RISCV_ISA_Zmmul   : boolean; -- implement multiply-only M sub-extension
-    RISCV_ISA_Zxcfu   : boolean; -- implement custom (instr.) functions unit
-    RISCV_ISA_Sdext   : boolean; -- implement external debug mode extension
-    RISCV_ISA_Sdtrig  : boolean; -- implement trigger module extension
-    RISCV_ISA_Smpmp   : boolean; -- implement physical memory protection
+    RISCV_ISA_A       : boolean; -- atomic memory operations extension
+    RISCV_ISA_B       : boolean; -- bit-manipulation extension
+    RISCV_ISA_C       : boolean; -- compressed extension
+    RISCV_ISA_E       : boolean; -- embedded-class register file extension
+    RISCV_ISA_M       : boolean; -- mul/div extension
+    RISCV_ISA_U       : boolean; -- user mode extension
+    RISCV_ISA_Zaamo   : boolean; -- atomic read-modify-write extension
+    RISCV_ISA_Zalrsc  : boolean; -- atomic reservation-set operations extension
+    RISCV_ISA_Zcb     : boolean; -- additional code size reduction instructions
+    RISCV_ISA_Zba     : boolean; -- shifted-add bit-manipulation extension
+    RISCV_ISA_Zbb     : boolean; -- basic bit-manipulation extension
+    RISCV_ISA_Zbkb    : boolean; -- bit-manipulation instructions for cryptography
+    RISCV_ISA_Zbkc    : boolean; -- carry-less multiplication instructions
+    RISCV_ISA_Zbkx    : boolean; -- cryptography crossbar permutation extension
+    RISCV_ISA_Zbs     : boolean; -- single-bit bit-manipulation extension
+    RISCV_ISA_Zfinx   : boolean; -- 32-bit floating-point extension
+    RISCV_ISA_Zibi    : boolean; -- branch with immediate
+    RISCV_ISA_Zicntr  : boolean; -- base counters
+    RISCV_ISA_Zicond  : boolean; -- integer conditional operations
+    RISCV_ISA_Zihpm   : boolean; -- hardware performance monitors
+    RISCV_ISA_Zkn     : boolean; -- NIST algorithm suite
+    RISCV_ISA_Zknd    : boolean; -- cryptography NIST AES decryption extension
+    RISCV_ISA_Zkne    : boolean; -- cryptography NIST AES encryption extension
+    RISCV_ISA_Zknh    : boolean; -- cryptography NIST hash extension
+    RISCV_ISA_Zks     : boolean; -- ShangMi algorithm suite
+    RISCV_ISA_Zksed   : boolean; -- ShangMi block cipher extension
+    RISCV_ISA_Zksh    : boolean; -- ShangMi hash extension
+    RISCV_ISA_Zkt     : boolean; -- data-independent execution time (for cryptography operations)
+    RISCV_ISA_Zmmul   : boolean; -- multiply-only M sub-extension
+    RISCV_ISA_Zxcfu   : boolean; -- custom (instr.) functions unit
+    RISCV_ISA_Sdext   : boolean; -- external debug mode extension
+    RISCV_ISA_Sdtrig  : boolean; -- trigger module extension
+    RISCV_ISA_Smpmp   : boolean; -- physical memory protection
     -- Tuning Options --
-    CPU_TRACE_EN      : boolean; -- implement CPU execution trace generator
-    CPU_CONSTT_BR_EN  : boolean; -- implement constant-time branches
+    CPU_TRACE_EN      : boolean; -- enable CPU execution trace generator
+    CPU_CONSTT_BR_EN  : boolean; -- constant-time branches
     CPU_FAST_MUL_EN   : boolean; -- use DSPs for M extension's multiplier
     CPU_FAST_SHIFT_EN : boolean; -- use barrel shifter for shift operations
-    CPU_RF_HW_RST_EN  : boolean  -- implement full hardware reset for register file
+    CPU_RF_HW_RST_EN  : boolean  -- enable full hardware reset for register file
   );
   port (
     -- global control --
@@ -120,7 +121,7 @@ architecture neorv32_cpu_control_rtl of neorv32_cpu_control is
     cause       : std_ulogic_vector(6 downto 0); -- trap ID for mcause CSR & debug-mode entry identifier
     pc          : std_ulogic_vector(XLEN-1 downto 0); -- trap program counter
     --
-    env_pending : std_ulogic; -- start of trap environment if pending
+    env_pending : std_ulogic; -- pending start of trap environment
     env_enter   : std_ulogic; -- enter trap environment
     env_exit    : std_ulogic; -- leave trap environment
     --
@@ -137,45 +138,44 @@ architecture neorv32_cpu_control_rtl of neorv32_cpu_control is
 
   -- control and status registers (CSRs) --
   type csr_t is record
-    addr           : std_ulogic_vector(11 downto 0); -- physical access address
-    we, we_nxt     : std_ulogic; -- write enable
-    re, re_nxt     : std_ulogic; -- read enable
-    operand        : std_ulogic_vector(XLEN-1 downto 0); -- write operand
-    wdata          : std_ulogic_vector(XLEN-1 downto 0); -- write data
-    rdata          : std_ulogic_vector(XLEN-1 downto 0); -- read data
+    addr          : std_ulogic_vector(11 downto 0); -- physical access address
+    we, we_nxt    : std_ulogic; -- write enable
+    re, re_nxt    : std_ulogic; -- read enable
+    operand       : std_ulogic_vector(XLEN-1 downto 0); -- write operand
+    wdata         : std_ulogic_vector(XLEN-1 downto 0); -- write data
+    rdata         : std_ulogic_vector(XLEN-1 downto 0); -- read data
     --
-    mstatus_mie    : std_ulogic; -- machine-mode IRQ enable
-    mstatus_mpie   : std_ulogic; -- previous machine-mode IRQ enable
-    mstatus_mpp    : std_ulogic; -- machine previous privilege mode
-    mstatus_mprv   : std_ulogic; -- effective privilege level for load/stores
-    mstatus_tw     : std_ulogic; -- do not allow user mode to execute WFI instruction when set
+    mstatus_mie   : std_ulogic; -- machine-mode IRQ enable
+    mstatus_mpie  : std_ulogic; -- previous machine-mode IRQ enable
+    mstatus_mpp   : std_ulogic; -- machine previous privilege mode
+    mstatus_mprv  : std_ulogic; -- effective privilege level for load/stores
+    mstatus_tw    : std_ulogic; -- do not allow user mode to execute WFI instruction when set
     --
-    mie_msi        : std_ulogic; -- machine software interrupt enable
-    mie_mei        : std_ulogic; -- machine external interrupt enable
-    mie_mti        : std_ulogic; -- machine timer interrupt enable
-    mie_firq       : std_ulogic_vector(15 downto 0); -- fast interrupt enable
+    mie_msi       : std_ulogic; -- machine software interrupt enable
+    mie_mei       : std_ulogic; -- machine external interrupt enable
+    mie_mti       : std_ulogic; -- machine timer interrupt enable
+    mie_firq      : std_ulogic_vector(15 downto 0); -- fast interrupt enable
     --
-    prv_level      : std_ulogic; -- current privilege level
-    prv_level_eff  : std_ulogic; -- current *effective* privilege level
+    prv_level     : std_ulogic; -- current privilege level
+    prv_level_eff : std_ulogic; -- current *effective* privilege level
     --
-    mepc           : std_ulogic_vector(XLEN-1 downto 0); -- machine exception PC
-    mcause         : std_ulogic_vector(5 downto 0); -- machine trap cause
-    mtvec          : std_ulogic_vector(XLEN-1 downto 0); -- machine trap-handler base address
-    mtval          : std_ulogic_vector(XLEN-1 downto 0); -- machine bad address or instruction
-    mtinst         : std_ulogic_vector(XLEN-1 downto 0); -- machine trap instruction
-    mscratch       : std_ulogic_vector(XLEN-1 downto 0); -- machine scratch register
-    mcounteren_cy  : std_ulogic; -- machine counter access enable: cycle counter
-    mcounteren_ir  : std_ulogic; -- machine counter access enable: instruction counter
-    mcountinhibit  : std_ulogic_vector(15 downto 0); -- inhibit counter increment
+    mepc          : std_ulogic_vector(XLEN-1 downto 0); -- machine exception PC
+    mcause        : std_ulogic_vector(5 downto 0); -- machine trap cause
+    mtvec         : std_ulogic_vector(XLEN-1 downto 0); -- machine trap-handler base address
+    mtval         : std_ulogic_vector(XLEN-1 downto 0); -- machine bad address or instruction
+    mtinst        : std_ulogic_vector(XLEN-1 downto 0); -- machine trap instruction
+    mscratch      : std_ulogic_vector(XLEN-1 downto 0); -- machine scratch register
+    mcounteren_cy : std_ulogic; -- machine counter access enable: cycle counter
+    mcounteren_ir : std_ulogic; -- machine counter access enable: instruction counter
     --
-    dcsr_ebreakm   : std_ulogic; -- behavior of ebreak instruction in m-mode
-    dcsr_ebreaku   : std_ulogic; -- behavior of ebreak instruction in u-mode
-    dcsr_step      : std_ulogic; -- single-step mode
-    dcsr_prv       : std_ulogic; -- current privilege level when entering debug mode
-    dcsr_cause     : std_ulogic_vector(2 downto 0); -- why was debug mode entered
-    dcsr_rd        : std_ulogic_vector(XLEN-1 downto 0); -- debug mode control and status register
-    dpc            : std_ulogic_vector(XLEN-1 downto 0); -- mode program counter
-    dscratch0      : std_ulogic_vector(XLEN-1 downto 0); -- debug mode scratch register 0
+    dcsr_ebreakm  : std_ulogic; -- behavior of ebreak instruction in m-mode
+    dcsr_ebreaku  : std_ulogic; -- behavior of ebreak instruction in u-mode
+    dcsr_step     : std_ulogic; -- single-step mode
+    dcsr_prv      : std_ulogic; -- current privilege level when entering debug mode
+    dcsr_cause    : std_ulogic_vector(2 downto 0); -- why was debug mode entered
+    dcsr_rd       : std_ulogic_vector(XLEN-1 downto 0); -- debug mode control and status register
+    dpc           : std_ulogic_vector(XLEN-1 downto 0); -- mode program counter
+    dscratch0     : std_ulogic_vector(XLEN-1 downto 0); -- debug mode scratch register 0
   end record;
   signal csr : csr_t;
 
@@ -195,7 +195,7 @@ architecture neorv32_cpu_control_rtl of neorv32_cpu_control is
   signal illegal_cmd  : std_ulogic; -- illegal instruction check
   signal csr_valid    : std_ulogic_vector(2 downto 0); -- CSR access: [2] implemented, [1] r/w access, [0] privilege
   signal cnt_event    : std_ulogic_vector(11 downto 0); -- counter events
-  signal ebreak_trig  : std_ulogic; -- "ebreak" exception trigger
+  signal ebreak_trig  : std_ulogic; -- environment break exception trigger
 
 begin
 
@@ -599,8 +599,7 @@ begin
   ctrl_o.csr_re       <= csr.re;
   ctrl_o.csr_addr     <= csr.addr;
   ctrl_o.csr_wdata    <= csr.wdata;
-  -- counters --
-  ctrl_o.cnt_halt     <= csr.mcountinhibit;
+  -- counter events --
   ctrl_o.cnt_event    <= cnt_event;
   -- instruction word bit fields --
   ctrl_o.ir_funct3    <= exe_engine.ir(instr_funct3_msb_c downto instr_funct3_lsb_c);
@@ -611,6 +610,22 @@ begin
   ctrl_o.cpu_trap     <= trap_ctrl.env_enter;
   ctrl_o.cpu_sync_exc <= trap_ctrl.exc_fire;
   ctrl_o.cpu_debug    <= debug_ctrl.run;
+
+
+  -- CPU (Counter) Events -------------------------------------------------------------------
+  -- -------------------------------------------------------------------------------------------
+  cnt_event(cnt_event_cy_c)       <= '0' when (exe_engine.state = EX_SLEEP)                                          else '1'; -- active cycle
+  cnt_event(cnt_event_tm_c)       <= '0';                                                                                      -- time: not available
+  cnt_event(cnt_event_ir_c)       <= '1' when (exe_engine.state = EX_EXECUTE)                                        else '0'; -- retired (=executed) instruction
+  cnt_event(cnt_event_compr_c)    <= '1' when (exe_engine.state = EX_EXECUTE)  and (exe_engine.ci = '1')             else '0'; -- executed compressed instruction
+  cnt_event(cnt_event_wait_dis_c) <= '1' when (exe_engine.state = EX_DISPATCH) and (frontend_i.valid = '0')          else '0'; -- instruction dispatch wait cycle
+  cnt_event(cnt_event_wait_alu_c) <= '1' when (exe_engine.state = EX_ALU_WAIT)                                       else '0'; -- multi-cycle ALU wait cycle
+  cnt_event(cnt_event_branch_c)   <= '1' when (exe_engine.state = EX_BRANCH)                                         else '0'; -- executed branch instruction
+  cnt_event(cnt_event_branched_c) <= '1' when (exe_engine.state = EX_BRANCHED)                                       else '0'; -- control flow transfer
+  cnt_event(cnt_event_load_c)     <= '1' when (ctrl.lsu_req = '1') and ((ctrl.lsu_rw = '0') or (ctrl.lsu_rmw = '1')) else '0'; -- executed load operation
+  cnt_event(cnt_event_store_c)    <= '1' when (ctrl.lsu_req = '1') and ((ctrl.lsu_rw = '1') or (ctrl.lsu_rmw = '1')) else '0'; -- executed store operation
+  cnt_event(cnt_event_wait_lsu_c) <= '1' when (ctrl.lsu_req = '0') and (exe_engine.state = EX_MEM_RSP)               else '0'; -- load/store memory wait cycle
+  cnt_event(cnt_event_trap_c)     <= '1' when (trap_ctrl.env_enter = '1')                                            else '0'; -- entered trap
 
 
   -- ****************************************************************************************************************************
@@ -750,10 +765,9 @@ begin
         end if;
 
       when opcode_branch_c => -- conditional branch
-        case exe_engine.ir(instr_funct3_msb_c downto instr_funct3_lsb_c) is
-          when funct3_beq_c | funct3_bne_c | funct3_blt_c | funct3_bge_c | funct3_bltu_c | funct3_bgeu_c => illegal_cmd <= '0';
-          when others => illegal_cmd <= '1';
-        end case;
+        if (exe_engine.ir(instr_funct3_msb_c downto instr_funct3_lsb_c+1) /= "01") or RISCV_ISA_Zibi then
+          illegal_cmd <= '0';
+        end if;
 
       when opcode_load_c => -- memory load
         case exe_engine.ir(instr_funct3_msb_c downto instr_funct3_lsb_c) is
@@ -874,7 +888,7 @@ begin
     end if;
   end process trap_buffer;
 
-  -- environment break exception helper --
+  -- environment break exception trigger --
   ebreak_trig <= (trap_ctrl.ebreak and (    csr.prv_level) and (not csr.dcsr_ebreakm) and (not debug_ctrl.run)) or -- M-mode trap when in M-mode
                  (trap_ctrl.ebreak and (not csr.prv_level) and (not csr.dcsr_ebreaku) and (not debug_ctrl.run));   -- M-mode trap when in U-mode
 
@@ -947,7 +961,7 @@ begin
   end process trap_controller;
 
   -- any exception? --
-  trap_ctrl.exc_fire <= '1' when (or_reduce_f(trap_ctrl.exc_buf) = '1') else '0'; -- sync. exceptions CANNOT be masked
+  trap_ctrl.exc_fire <= '1' when (or_reduce_f(trap_ctrl.exc_buf) = '1') else '0'; -- sync. exceptions cannot be masked
 
   -- any system interrupt? --
   trap_ctrl.irq_fire(0) <= '1' when
@@ -1014,7 +1028,6 @@ begin
       csr.mtinst        <= (others => '0');
       csr.mcounteren_cy <= '0';
       csr.mcounteren_ir <= '0';
-      csr.mcountinhibit <= (others => '0');
       csr.dcsr_ebreakm  <= '0';
       csr.dcsr_ebreaku  <= '0';
       csr.dcsr_step     <= '0';
@@ -1070,16 +1083,6 @@ begin
               csr.mepc(1) <= '0';
             end if;
 
-          -- machine counter-inhibit register --
-          when csr_mcountinhibit_c =>
-            if RISCV_ISA_Zicntr then
-              csr.mcountinhibit(0) <= csr.wdata(0);
-              csr.mcountinhibit(2) <= csr.wdata(2);
-            end if;
-            if RISCV_ISA_Zihpm then
-              csr.mcountinhibit(15 downto 3) <= csr.wdata(15 downto 3);
-            end if;
-
           -- debug mode control and status register --
           when csr_dcsr_c =>
             if (csr.addr = csr_dcsr_c) and RISCV_ISA_Sdext then
@@ -1116,12 +1119,12 @@ begin
       -- ********************************************************************************
       elsif (trap_ctrl.env_enter = '1') then
 
-        -- NORMAL trap entry - no CSR update when in debug-mode! --
+        -- trap to machine-mode - no CSR update when in debug-mode! --
         if (not RISCV_ISA_Sdext) or ((trap_ctrl.cause(5) = '0') and (debug_ctrl.run = '0')) then
           csr.mcause <= trap_ctrl.cause(trap_ctrl.cause'left) & trap_ctrl.cause(4 downto 0); -- trap type & identifier
           csr.mepc   <= trap_ctrl.pc(XLEN-1 downto 1) & '0'; -- trap PC
           -- trap value (load/store trap address only, permitted by RISC-V priv. spec.) --
-          if (trap_ctrl.cause(6) = '0') and (trap_ctrl.cause(2) = '1') then -- load/store misaligned/access faults [hacky!]
+          if (trap_ctrl.cause(6) = '0') and (trap_ctrl.cause(2) = '1') then -- load/store misaligned/access fault
             csr.mtval <= lsu_mar_i; -- faulting data access address
           else -- everything else including all interrupts
             csr.mtval <= (others => '0');
@@ -1138,7 +1141,7 @@ begin
           csr.mstatus_mpp  <= csr.prv_level; -- backup previous privilege level
         end if;
 
-        -- DEBUG trap entry - no CSR update when already in debug-mode! --
+        -- trap to debug-mode - no CSR update when already in debug-mode! --
         if RISCV_ISA_Sdext and (trap_ctrl.cause(5) = '1') and (debug_ctrl.run = '0') then
           csr.dcsr_cause <= trap_ctrl.cause(2 downto 0); -- trap cause
           csr.dcsr_prv   <= csr.prv_level; -- current privilege level when debug mode was entered
@@ -1150,7 +1153,7 @@ begin
       -- ********************************************************************************
       elsif (trap_ctrl.env_exit = '1') then
 
-        -- return from debug mode --
+        -- return from debug-mode --
         if RISCV_ISA_Sdext and (debug_ctrl.run = '1') then
           if RISCV_ISA_U then
             csr.prv_level <= csr.dcsr_prv;
@@ -1158,7 +1161,7 @@ begin
               csr.mstatus_mprv <= '0'; -- clear if return to priv. level less than M
             end if;
           end if;
-        -- return from normal trap --
+        -- return from machine-mode trap --
         else
           if RISCV_ISA_U then
             csr.prv_level   <= csr.mstatus_mpp; -- restore previous privilege level
@@ -1174,23 +1177,10 @@ begin
       end if;
 
       -- ********************************************************************************
-      -- Override - terminate unavailable registers and bits
+      -- Override: terminate unavailable registers and bits
       -- ********************************************************************************
 
-      -- hardwired bits --
-      csr.mcountinhibit(1) <= '0'; -- "time" not defined
-
       -- no base counters --
-      if not RISCV_ISA_Zicntr then
-        csr.mcountinhibit(2 downto 0) <= (others => '0');
-      end if;
-
-      -- no hardware performance monitors --
-      if not RISCV_ISA_Zihpm then
-        csr.mcountinhibit(15 downto 3) <= (others => '0');
-      end if;
-
-      -- no user-mode counters at all --
       if not RISCV_ISA_Zicntr then
         csr.mcounteren_cy <= '0';
         csr.mcounteren_ir <= '0';
@@ -1245,7 +1235,8 @@ begin
           when csr_mstatus_c => -- machine status register, low word
             csr.rdata(3)  <= csr.mstatus_mie;
             csr.rdata(7)  <= csr.mstatus_mpie;
-            csr.rdata(12 downto 11) <= (others => csr.mstatus_mpp);
+            csr.rdata(11) <= csr.mstatus_mpp;
+            csr.rdata(12) <= csr.mstatus_mpp;
             csr.rdata(17) <= csr.mstatus_mprv;
             csr.rdata(21) <= csr.mstatus_tw and bool_to_ulogic_f(RISCV_ISA_U);
 
@@ -1299,18 +1290,6 @@ begin
 
           when csr_mtinst_c => -- machine trap instruction
             csr.rdata <= csr.mtinst;
-
-          -- --------------------------------------------------------------------
-          -- machine counter setup
-          -- --------------------------------------------------------------------
-          when csr_mcountinhibit_c => -- machine counter-inhibit register
-            if RISCV_ISA_Zicntr then
-              csr.rdata(0) <= csr.mcountinhibit(0); -- [m]cycle[h]
-              csr.rdata(2) <= csr.mcountinhibit(2); -- [m]instret[h]
-            end if;
-            if RISCV_ISA_Zihpm then
-              csr.rdata(15 downto 3) <= csr.mcountinhibit(15 downto 3); -- [m]hpmcounter*[h]
-            end if;
 
           -- --------------------------------------------------------------------
           -- machine information
@@ -1368,7 +1347,8 @@ begin
             csr.rdata(26) <= bool_to_ulogic_f(RISCV_ISA_Zalrsc); -- Zalrsc: reservation-set operations
             csr.rdata(27) <= bool_to_ulogic_f(RISCV_ISA_Zcb);    -- Zcb: additional code size reduction instructions
             csr.rdata(28) <= bool_to_ulogic_f(RISCV_ISA_C);      -- Zca: C without floating-point
-            csr.rdata(31 downto 29) <= (others => '0');          -- reserved
+            csr.rdata(29) <= bool_to_ulogic_f(RISCV_ISA_Zibi);   -- Zibi: branch with immediate-comparison
+            csr.rdata(31 downto 30) <= (others => '0');          -- reserved
 
           -- --------------------------------------------------------------------
           -- undefined/unavailable or implemented externally
@@ -1383,27 +1363,6 @@ begin
 
   -- CSR read data output (to register file mux) --
   csr_rdata_o <= csr.rdata;
-
-
-  -- ****************************************************************************************************************************
-  -- CPU Counter Events
-  -- ****************************************************************************************************************************
-
-  -- RISC-V-compliant counter events --
-  cnt_event(cnt_event_cy_c) <= '0' when (exe_engine.state = EX_SLEEP) else '1'; -- active cycle
-  cnt_event(cnt_event_tm_c) <= '0'; -- time: not available
-  cnt_event(cnt_event_ir_c) <= '1' when (exe_engine.state = EX_EXECUTE) else '0'; -- retired (=executed) instruction
-
-  -- NEORV32-specific counter events --
-  cnt_event(cnt_event_compr_c)    <= '1' when (exe_engine.state = EX_EXECUTE)  and (exe_engine.ci = '1')             else '0'; -- executed compressed instruction
-  cnt_event(cnt_event_wait_dis_c) <= '1' when (exe_engine.state = EX_DISPATCH) and (frontend_i.valid = '0')          else '0'; -- instruction dispatch wait cycle
-  cnt_event(cnt_event_wait_alu_c) <= '1' when (exe_engine.state = EX_ALU_WAIT)                                       else '0'; -- multi-cycle ALU wait cycle
-  cnt_event(cnt_event_branch_c)   <= '1' when (exe_engine.state = EX_BRANCH)                                         else '0'; -- executed branch instruction
-  cnt_event(cnt_event_branched_c) <= '1' when (exe_engine.state = EX_BRANCHED)                                       else '0'; -- control flow transfer
-  cnt_event(cnt_event_load_c)     <= '1' when (ctrl.lsu_req = '1') and ((ctrl.lsu_rw = '0') or (ctrl.lsu_rmw = '1')) else '0'; -- executed load operation
-  cnt_event(cnt_event_store_c)    <= '1' when (ctrl.lsu_req = '1') and ((ctrl.lsu_rw = '1') or (ctrl.lsu_rmw = '1')) else '0'; -- executed store operation
-  cnt_event(cnt_event_wait_lsu_c) <= '1' when (ctrl.lsu_req = '0') and (exe_engine.state = EX_MEM_RSP)               else '0'; -- load/store memory wait cycle
-  cnt_event(cnt_event_trap_c)     <= '1' when (trap_ctrl.env_enter = '1')                                            else '0'; -- entered trap
 
 
   -- ****************************************************************************************************************************
