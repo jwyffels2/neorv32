@@ -61,16 +61,16 @@ entity neorv32_litex_core_complex is
     wb_err_i   : in  std_ulogic; -- transfer error
 
     -- CPU interrupt --
-    mext_irq_i : in  std_ulogic  -- RISC-V machine external interrupt (MEI)
+    irq_mei_i  : in  std_ulogic  -- RISC-V machine external interrupt (MEI)
   );
-end neorv32_litex_core_complex;
+end entity;
 
 architecture neorv32_litex_core_complex_rtl of neorv32_litex_core_complex is
 
   -- configuration helpers --
   constant num_configs_c : natural := 5;    -- number of pre-defined configurations
-  type bool_t is array (0 to num_configs_c-1) of boolean;
-  type natural_t is array (0 to num_configs_c-1) of natural;
+  type bool_t is array (num_configs_c-1 downto 0) of boolean;
+  type natural_t is array (num_configs_c-1 downto 0) of natural;
   type configs_t is record
     riscv_c      : bool_t;
     riscv_m      : bool_t;
@@ -167,8 +167,7 @@ begin
     xbus_ack_i => wb_ack_i,   -- transfer acknowledge
     xbus_err_i => wb_err_i,   -- transfer error
     -- CPU Interrupts --
-    mext_irq_i => mext_irq_i  -- machine external interrupt
+    irq_mei_i  => irq_mei_i   -- machine external interrupt
   );
 
-
-end neorv32_litex_core_complex_rtl;
+end architecture;

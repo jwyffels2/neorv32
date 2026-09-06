@@ -1,7 +1,7 @@
 // ================================================================================ //
 // The NEORV32 RISC-V Processor - https://github.com/stnolting/neorv32              //
 // Copyright (c) NEORV32 contributors.                                              //
-// Copyright (c) 2020 - 2025 Stephan Nolting. All rights reserved.                  //
+// Copyright (c) 2020 - 2026 Stephan Nolting. All rights reserved.                  //
 // Licensed under the BSD-3-Clause license, see LICENSE for details.                //
 // SPDX-License-Identifier: BSD-3-Clause                                            //
 // ================================================================================ //
@@ -13,7 +13,6 @@
 
 #include <neorv32.h>
 
-
 /**********************************************************************//**
  * Check if WDT unit was synthesized.
  *
@@ -23,7 +22,6 @@ int neorv32_wdt_available(void) {
 
   return (int)(NEORV32_SYSINFO->SOC & (1 << SYSINFO_SOC_IO_WDT));
 }
-
 
 /**********************************************************************//**
  * Configure and enable watchdog timer.
@@ -45,7 +43,6 @@ void neorv32_wdt_setup(uint32_t timeout, int lock) {
   NEORV32_WDT->CTRL = ctrl;
 }
 
-
 /**********************************************************************//**
  * Disable watchdog timer.
  *
@@ -53,10 +50,9 @@ void neorv32_wdt_setup(uint32_t timeout, int lock) {
  **************************************************************************/
 int neorv32_wdt_disable(void) {
 
-  NEORV32_WDT->CTRL &= (uint32_t)(1 << WDT_CTRL_EN); // try to disable
+  __MMREG32_BCLR(NEORV32_WDT->CTRL, 1 << WDT_CTRL_EN); // try to disable
   return (int)(NEORV32_WDT->CTRL & (1 << WDT_CTRL_EN));
 }
-
 
 /**********************************************************************//**
  * Feed watchdog (reset timeout counter).
@@ -68,21 +64,19 @@ void neorv32_wdt_feed(uint32_t password) {
   NEORV32_WDT->RESET = password;
 }
 
-
 /**********************************************************************//**
  * Force a hardware reset triggered by the watchdog.
  **************************************************************************/
 void neorv32_wdt_force_hwreset(void) {
 
-  // make sure the WDT is enabled
+  // make sure the WDT is enabled and locked
   // if it is locked this will trigger a hardware reset
-  NEORV32_WDT->CTRL = (uint32_t)(1 << WDT_CTRL_EN);
+  NEORV32_WDT->CTRL |= (uint32_t)(1 << WDT_CTRL_EN) + (uint32_t)(WDT_CTRL_LOCK);
 
-  // reset the WDT using an incorrect password;
+  // reset the WDT using an incorrect password while in locked mode;
   // this will trigger a hardware reset
   NEORV32_WDT->RESET = 0;
 }
-
 
 /**********************************************************************//**
  * Get cause of last system reset.

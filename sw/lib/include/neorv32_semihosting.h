@@ -1,7 +1,7 @@
 // ================================================================================ //
 // The NEORV32 RISC-V Processor - https://github.com/stnolting/neorv32              //
 // Copyright (c) NEORV32 contributors.                                              //
-// Copyright (c) 2020 - 2025 Stephan Nolting. All rights reserved.                  //
+// Copyright (c) 2020 - 2026 Stephan Nolting. All rights reserved.                  //
 // Licensed under the BSD-3-Clause license, see LICENSE for details.                //
 // SPDX-License-Identifier: BSD-3-Clause                                            //
 // ================================================================================ //
@@ -14,8 +14,8 @@
 #ifndef NEORV32_SEMIHOSTING_H
 #define NEORV32_SEMIHOSTING_H
 
+#include <neorv32.h>
 #include <stdint.h>
-
 
 /**********************************************************************//**
  * @name Host service request IDs
@@ -99,7 +99,7 @@ int neorv32_semihosting_system(char *cmd);
  * @param[in] arg Argument / pointer to data array.
  * @return Host return value.
  **************************************************************************/
-inline int __attribute__ ((always_inline)) neorv32_semihosting_req(int id, void* arg) {
+static inline int __attribute__ ((always_inline)) neorv32_semihosting_req(int id, void* arg) {
 
   register int value asm ("a0") = id;
   register void* data asm ("a1") = arg;

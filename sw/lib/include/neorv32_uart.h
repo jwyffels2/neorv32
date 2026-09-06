@@ -1,7 +1,7 @@
 // ================================================================================ //
 // The NEORV32 RISC-V Processor - https://github.com/stnolting/neorv32              //
 // Copyright (c) NEORV32 contributors.                                              //
-// Copyright (c) 2020 - 2025 Stephan Nolting. All rights reserved.                  //
+// Copyright (c) 2020 - 2026 Stephan Nolting. All rights reserved.                  //
 // Licensed under the BSD-3-Clause license, see LICENSE for details.                //
 // SPDX-License-Identifier: BSD-3-Clause                                            //
 // ================================================================================ //
@@ -14,9 +14,9 @@
 #ifndef NEORV32_UART_H
 #define NEORV32_UART_H
 
+#include <neorv32.h>
 #include <stdint.h>
 #include <stdarg.h>
-
 
 /**********************************************************************//**
  * @name IO Device: Primary/Secondary Universal Asynchronous Receiver and Transmitter (UART0 / UART1)
@@ -90,6 +90,7 @@ char neorv32_uart_getc(neorv32_uart_t *UARTx);
 int  neorv32_uart_char_received(neorv32_uart_t *UARTx);
 char neorv32_uart_char_received_get(neorv32_uart_t *UARTx);
 void neorv32_uart_puts(neorv32_uart_t *UARTx, const char *s);
+void neorv32_uart_println(neorv32_uart_t *UARTx, const char *s);
 void neorv32_uart_vprintf(neorv32_uart_t *UARTx, const char *format, va_list args);
 void neorv32_uart_printf(neorv32_uart_t *UARTx, const char *format, ...);
 int  neorv32_uart_scan(neorv32_uart_t *UARTx, char *buffer, int max_size, int echo);
@@ -116,6 +117,7 @@ int  neorv32_uart_scan(neorv32_uart_t *UARTx, char *buffer, int max_size, int ec
 #define neorv32_uart0_char_received()              neorv32_uart_char_received(NEORV32_UART0)
 #define neorv32_uart0_char_received_get()          neorv32_uart_char_received_get(NEORV32_UART0)
 #define neorv32_uart0_puts(s)                      neorv32_uart_puts(NEORV32_UART0, s)
+#define neorv32_uart0_println(s)                   neorv32_uart_println(NEORV32_UART0, s)
 #define neorv32_uart0_printf(...)                  neorv32_uart_printf(NEORV32_UART0, __VA_ARGS__)
 #define neorv32_uart0_scan(buffer, max_size, echo) neorv32_uart_scan(NEORV32_UART0, buffer, max_size, echo)
 
@@ -135,6 +137,7 @@ int  neorv32_uart_scan(neorv32_uart_t *UARTx, char *buffer, int max_size, int ec
 #define neorv32_uart1_char_received()              neorv32_uart_char_received(NEORV32_UART1)
 #define neorv32_uart1_char_received_get()          neorv32_uart_char_received_get(NEORV32_UART1)
 #define neorv32_uart1_puts(s)                      neorv32_uart_puts(NEORV32_UART1, s)
+#define neorv32_uart1_println(s)                   neorv32_uart_println(NEORV32_UART1, s)
 #define neorv32_uart1_printf(...)                  neorv32_uart_printf(NEORV32_UART1, __VA_ARGS__)
 #define neorv32_uart1_scan(buffer, max_size, echo) neorv32_uart_scan(NEORV32_UART1, buffer, max_size, echo)
 /**@}*/

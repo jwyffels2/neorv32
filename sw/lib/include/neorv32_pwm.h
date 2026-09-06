@@ -1,7 +1,7 @@
 // ================================================================================ //
 // The NEORV32 RISC-V Processor - https://github.com/stnolting/neorv32              //
 // Copyright (c) NEORV32 contributors.                                              //
-// Copyright (c) 2020 - 2025 Stephan Nolting. All rights reserved.                  //
+// Copyright (c) 2020 - 2026 Stephan Nolting. All rights reserved.                  //
 // Licensed under the BSD-3-Clause license, see LICENSE for details.                //
 // SPDX-License-Identifier: BSD-3-Clause                                            //
 // ================================================================================ //
@@ -14,8 +14,8 @@
 #ifndef NEORV32_PWM_H
 #define NEORV32_PWM_H
 
+#include <neorv32.h>
 #include <stdint.h>
-
 
 /**********************************************************************//**
  * @name IO Device: Pulse Width Modulation Controller (PWM)
@@ -26,7 +26,8 @@ typedef volatile struct __attribute__((packed,aligned(4))) {
   uint32_t ENABLE;             /**< per-channel enable */
   uint32_t POLARITY;           /**< per-channel polarity */
   uint32_t CLKPRSC;            /**< global clock prescaler */
-  const uint32_t reserved[29]; /**< reserved */
+  uint32_t MODE;               /**< per-channel operation mode */
+  const uint32_t reserved[28]; /**< reserved */
   union {
     uint32_t TOPCMP; /**< full 32-bit channel access */
     struct {
@@ -46,13 +47,13 @@ typedef volatile struct __attribute__((packed,aligned(4))) {
  **************************************************************************/
 /**@{*/
 int  neorv32_pwm_available(void);
-int  neorv32_pmw_get_num_channels(void);
+int  neorv32_pwm_get_num_channels(void);
 void neorv32_pwm_set_clock(int prsc);
 void neorv32_pwm_ch_enable_mask(uint32_t mask);
 void neorv32_pwm_ch_disable_mask(uint32_t mask);
 void neorv32_pwm_ch_enable_single(int ch);
 void neorv32_pwm_ch_disable_single(int ch);
-void neorv32_pwm_ch_setup(int ch, int top, int pol);
+void neorv32_pwm_ch_setup(int ch, int top, int pol, int mode);
 void neorv32_pwm_ch_set_duty(int ch, int duty);
 /**@}*/
 

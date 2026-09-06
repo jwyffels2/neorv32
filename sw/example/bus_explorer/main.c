@@ -1,7 +1,7 @@
 // ================================================================================ //
 // The NEORV32 RISC-V Processor - https://github.com/stnolting/neorv32              //
 // Copyright (c) NEORV32 contributors.                                              //
-// Copyright (c) 2020 - 2025 Stephan Nolting. All rights reserved.                  //
+// Copyright (c) 2020 - 2026 Stephan Nolting. All rights reserved.                  //
 // Licensed under the BSD-3-Clause license, see LICENSE for details.                //
 // SPDX-License-Identifier: BSD-3-Clause                                            //
 // ================================================================================ //
@@ -9,7 +9,6 @@
 
 /**********************************************************************//**
  * @file bus_explorer/main.c
- * @author Stephan Nolting
  * @brief Interactive memory inspector.
  **************************************************************************/
 
@@ -49,7 +48,7 @@ void memory_trap_handler(void);
  **************************************************************************/
 int main() {
 
-  char buffer[8];
+  char buffer[40];
   char strtok_delimiter[] = " ";
   int length = 0;
 
@@ -104,22 +103,26 @@ int main() {
     if ((!strcmp(command, "help")) || (command == NULL)) {
       neorv32_uart0_printf(
         "Available commands:\n"
-        " help                         - show this text\n"
-        " setup                        - configure memory access width (byte,half,word)\n"
-        " test [address]               - test memory interface at [address]\n"
-        " set [address] [value] [num]  - write [value] [num] times to memory starting at [address]\n"
-        " read [address]               - read data from [address]\n"
-        " write [address] [value]      - write [value] to [address]\n"
-        " dump [address]               - hex dump bytes + ASCII starting at [address]\n"
-        " sync                         - synchronize with main memory\n"
+        "\n"
+        " help                        - show this text\n"
+        " setup                       - configure memory access width (byte,half,word)\n"
+        " test [address]              - test memory interface at [address]\n"
+        " set [address] [value] [num] - write [value] [num] times to memory starting at [address]\n"
+        " read [address]              - read data from [address]\n"
+        " write [address] [value]     - write [value] to [address]\n"
+        " dump [address]              - hex dump bytes + ASCII starting at [address]\n"
+        " sync                        - synchronize with main memory\n"
+        " exit                        - return to bootloader (if available)\n"
         "\n"
         "NOTE: [address], [num] and [value] are 32-bit hexadecimal numbers without prefix.\n"
         "      If less than 8 hex chars are entered the remaining MSBs are filled with zeros.\n"
         "\n"
         "Examples:\n"
+        "\n"
         " write 80000020 feedcafe\n"
         " read 00000460\n"
-        " set 80000100 deadc0de 100\n\n"
+        " set 80000100 deadc0de 100\n"
+        "\n"
       );
     }
 
@@ -186,6 +189,24 @@ int main() {
       asm volatile ("fence.i");
       asm volatile ("fence");
       neorv32_uart0_printf("ok\n");
+    }
+
+    else if (!strcmp(command, "exit")) {
+      if (NEORV32_SYSINFO->SOC & (1<<SYSINFO_SOC_BOOTLOADER)) {
+        neorv32_uart0_printf("Returning to bootloader...\n");
+        while(neorv32_uart0_tx_busy());
+        const uint32_t boot_addr = (uint32_t)NEORV32_BOOTROM_BASE;
+        asm volatile (
+          "csrw mepc, %[addr] \n"
+          "mret               \n"
+          : : [addr] "r" (boot_addr)
+        );
+        __builtin_unreachable();
+        while (1); // should never be reached
+      }
+      else {
+        neorv32_uart0_printf("Bootloader not available.\n");
+      }
     }
 
     else {
@@ -349,8 +370,10 @@ void set_memory(uint32_t address, int value, uint32_t num) {
 
   exception = 0;
 
+  uint32_t address_original;
   uint32_t i = 0;
   for (i=0; i<num; i++) {
+    address_original = address;
     if (access_size == 'b') {
       neorv32_cpu_store_unsigned_byte(address, (uint8_t)value);
       address += 1;
@@ -366,7 +389,7 @@ void set_memory(uint32_t address, int value, uint32_t num) {
     if (exception) {
       return;
     }
-    neorv32_uart0_printf("[0x%x] <= 0x%x\n", address, value);
+    neorv32_uart0_printf("[0x%x] <= 0x%x\n", address_original, value);
   }
 }
 

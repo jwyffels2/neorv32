@@ -1,4 +1,5 @@
-# generated app files
+# build artifacts
+build/
 *.bin
 *.coe
 *.mem
@@ -9,20 +10,28 @@
 *.out
 *.hex
 *_image.vhd
-*.ghw
-build/
+*_wrapper.v
+*.json
+*.cf
+*.dSYM
 
 # keep default VHDL memory images
 !rtl/core/*_image.vhd
 
-# logs
-*.gdb_history
+# logs and dumps
+*.gdb*
 *.log
+*.vcd
+*.fst
+*.ghw
 
 # host executables
 sw/image_gen/image_gen
 *.exe
-*.cf
+
+# riscv-arch-test artifacts
+__pycache__
+riscof_work
 
 # temporary files and folders
 *.bak

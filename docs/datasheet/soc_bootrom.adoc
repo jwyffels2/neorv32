@@ -5,19 +5,20 @@
 [cols="<3,<3,<4"]
 [grid="none"]
 |=======================
-| Hardware source files:  | neorv32_boot_rom.vhd         | default platform-agnostic bootloader ROM
-|                         | neorv32_bootloader_image.vhd | memory image (VHDL package)
-| Software driver files:  | none                         | _implicitly used_
-| Top entity ports:       | none                         |
-| Configuration generics: | `BOOT_MODE_SELECT`           | implement BOOTROM when `BOOT_MODE_SELECT` = 0; see <<_boot_configuration>>
-| CPU interrupts:         | none                         |
+| Hardware source files:  | neorv32_bootrom.vhd       | default platform-agnostic bootloader ROM
+|                         | neorv32_bootrom_image.vhd | memory initialization image
+| Software driver files:  | none                      |
+| Top entity ports:       | none                      |
+| Configuration generics: | `BOOT_MODE_SELECT`        | implement BOOTROM when `BOOT_MODE_SELECT` = 0; see <<_boot_configuration>>
+| CPU interrupts:         | none                      |
 |=======================
 
 **Key Features**
 
-* Burst-capable tightly-coupled on-chip ROM
-* Accessible at the byte level
-* Can be mapped to blockRAM primitives
+* Tightly-coupled on-chip ROM
+* Accessible at byte level
+* Mapped to memory primitives
+* Can be replaced by custom (Verilog) memory IP
 * Pre-initialized with default NEORV32 bootloader
 
 
@@ -31,6 +32,12 @@ Note that the entire boot ROM is read-only.
 .Bootloader Image
 [IMPORTANT]
 The bootloader ROM is initialized during synthesis with the default bootloader image
-(`rtl/core/neorv32_bootloader_image.vhd`). The physical size of the ROM is automatically
+(`rtl/core/neorv32_bootrom_image.vhd`). The physical size of the ROM is automatically
 adjusted to the next power of two of the image size. However, note that the BOOTROM is
 constrained to a maximum size of 64kB.
+
+.Custom IP Replacement
+[TIP]
+This module/file can be replaced by a platform-specific module/file (for example, to use
+technology-specific memory IP). See section <<_replaceable_modules>> for more information.
+Alternatively, a custom BOOTROM can be connected via the <<_processor_external_bus_interface_xbus>>.
